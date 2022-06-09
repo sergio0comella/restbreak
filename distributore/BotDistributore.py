@@ -30,7 +30,7 @@ class BotDistributore:
         self.pathManager = PathManager(self.robot)
         self.keyboardController = KeyboardController(self.robot)
         self.isStarted = True
-        self.waitingBeforeCA = False
+        self.waitingBeforeCA = True
         self.isCollisionAvoidance = False
 
     def run(self):
@@ -40,7 +40,7 @@ class BotDistributore:
                 self.keyboardController.update()
                 continue
             
-            if self.pathManager.getStatus() == STOP:
+            if self.pathManager.getStatus() == START:
                 self.pathManager.setStatus(INSERT)
 
             elif self.pathManager.getStatus() == INSERT:
@@ -59,19 +59,19 @@ class BotDistributore:
                         self.pathManager.setGoalPosition(Position(SX, SY).getPositionArray())
                     except GoalPositionAlreadyReached as reached:
                         Logger.info(f"{reached}")
-                    # self.setWheelsSpeed(SPEED, SPEED)
 
             elif self.pathManager.getStatus() == RUN:
                 pathStatus = self.pathManager.run()
-
-                if pathStatus == OBS_FOUNDED and not self.waitingBeforeCA:
-                    self.waitingBeforeCA = True
+                
+                #Attendo prima 5 secondi
+                if pathStatus == OBS_FOUNDED and self.waitingBeforeCA:
+                    self.waitingBeforeCA = False
                     self.stopMoving()
                     self.stepRotation(self.robot.getTime() + 5)
                     self.setWheelsSpeed(SPEED, SPEED)
                     continue
                 else:
-                    self.waitingBeforeCA = False
+                    self.waitingBeforeCA = True
 
                 # al primo step verifico la prima direzione calcolata
                 if self.isStarted and not self.isCollisionAvoidance:
@@ -91,8 +91,9 @@ class BotDistributore:
                 self.pathManager.goalReached()
                 self.keyboardController.lockStatus()
 
+    # Lo stato del robot è START 
     def isWaitingCommand(self):
-        return self.pathManager.getStatus() == STOP
+        return self.pathManager.getStatus() == START
 
     def stopMoving(self):
         self.setWheelsSpeed(0, 0)
@@ -146,18 +147,17 @@ class BotDistributore:
         self.setWheelsSpeed(SPEED, SPEED)
         self.isCollisionAvoidance = False
 
+    # Calcola il tempo necessario a effettuare la rotazione
+    # newAngle è l'angolo che deve avere il robot rispetto al Nord
+    #  Non è l'angolo di rotazione
     def rotateRobot(self, newAngle, uTurn=False):
         currentAngle = self.pathManager.getRobotAngleWithoutCheck()
-        self.pathManager.rotationDirection(newAngle, currentAngle)
+        self.pathManager.updateClockwise(newAngle, currentAngle)
         differenceAngle = self.calculateDifferenceAngle(currentAngle, newAngle)
         timeToRotate = self.robot.getTime() + self.pathManager.calculateRotationTime(differenceAngle)
 
-        # Logger.info(f"From: {currentAngle} To: {newAngle}")
-        # Logger.info(f"Diff: {differenceAngle} time: {self.pathManager.calculateRotationTime(differenceAngle)}")
-        # Logger.info(f"Last dir: {self.pathManager.getLastDirection()} <--> {newAngle}")
-
-        if not self.isCollisionAvoidance and not np.isnan(
-                self.pathManager.getLastDirection()) and self.pathManager.getLastDirection() == newAngle:
+        #Se l'angolo è uguale al precedente e non ho una collision allora vado dritto
+        if not self.isCollisionAvoidance and not np.isnan(self.pathManager.getLastDirection()) and self.pathManager.getLastDirection() == newAngle:
             return
 
         if differenceAngle == 0 or (

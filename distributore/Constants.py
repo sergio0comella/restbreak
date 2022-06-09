@@ -1,6 +1,6 @@
 from math import nan
 
-STOP = -1
+START = -1
 BASE = 0
 INSERT = 1
 RUN = 2

@@ -45,8 +45,6 @@ class KeyboardController:
             
             if(1 <= len(self.orderlist) <= 2):
                 office = int(''.join(self.orderlist))
-                # self.emptyOrderList()
-                
                 print(office)
                 if office < 0 or office > 6:
                     print('Ufficio inesistente.')

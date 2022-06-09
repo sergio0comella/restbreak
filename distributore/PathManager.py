@@ -21,7 +21,7 @@ class PathManager:
         self.pathFollower = PathFollower(robot)
         self.startPosition = Position(SX, SY)
         self.goalPosition = nan
-        self.status = STOP
+        self.status = START
         self.currentPosition = Position(SX, SY)
         self.directions = None #FIFO
         self.intersections = None #FIFO
@@ -37,6 +37,8 @@ class PathManager:
     def resetOverIntersection(self):
         self.pathFollower.resetOverIntersection()
 
+    # dopo le verifiche base
+    # calcolo route > intersezioni > direzioni
     def getFastestRoute(self):
         if self.goalPosition == nan:
             raise GoalPositionNotFound('Goal position not found')
@@ -57,6 +59,7 @@ class PathManager:
         
         return self.directions
 
+    # Dalla mappa verifico se il punto del percorso è un'intersezione e la salvo
     def getIntersectionNodesFromRoute(self):
         intersections = []
         if self.route == None:
@@ -70,6 +73,7 @@ class PathManager:
         intersections.append(self.route[-1])
         return intersections
 
+    # Dalle intersezioni calcolo gli angoli corrispondenti
     def getDirectionsFromIntersections(self, intersections):
         directions = []
 
@@ -95,6 +99,7 @@ class PathManager:
     def setGoalPosition(self, goalPosition):
         self.goalPosition = goalPosition
 
+    #dall'ufficio numerico prendo le coordinate e le imposto nel goal
     def setGoalPositionFromOfficeNumber(self, officeNumber):
         officePosition = self.map.getOfficePosition(officeNumber).getPositionArray()
         self.setGoalPosition(officePosition)
@@ -108,9 +113,11 @@ class PathManager:
     def setStartPosition(self, startPosition):
         self.startPosition = startPosition
 
+    #angles
     def popDirection(self):
         return self.directions.pop(0) if self.directions else UNKNOWN
 
+    #landmark
     def popIntersection(self):
         return self.intersections.pop(0) if self.intersections else UNKNOWN
 
@@ -124,6 +131,8 @@ class PathManager:
         currAngle = self.getRobotAngle()
         return self.utilController.checkAndApproximateAngle(currAngle)
 
+    #Aggiorno la positione corrente del robot con la prima intersezione in coda
+    # e verifico se sono arrivato al goal
     def updatePosition(self):
         currIntersect = self.popIntersection()
         self.currentPosition = Position(currIntersect[0], currIntersect[1])
@@ -137,7 +146,7 @@ class PathManager:
             return True
         return False
 
-    def rotationDirection(self, newAngle, currAngle):
+    def updateClockwise(self, newAngle, currAngle):
         if(newAngle == NORTH):
             if(180 <= currAngle <= 359.9):
                 self.clockwise = False
@@ -167,7 +176,7 @@ class PathManager:
     
     def goalReached(self):
         Logger.goalReached()
-        self.setStatus(STOP)
+        self.setStatus(START)
         self.setStartPosition(self.currentPosition)
         print("Sblocca il dispositivo, poi inserisci una nuova destinazione:")
         self.map.resetMap()
