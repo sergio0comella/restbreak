@@ -30,15 +30,15 @@ class PathFollower:
     def followPath(self):
         leftSensorValue = int(self.leftSensor.getValue())
         rightSensorValue = int(self.rightSensor.getValue())
-        
-        obstaclesCheck = self.obstaclesAvoidance.checkObstacles()
-        if obstaclesCheck == OBS_FOUNDED:
-            return OBS_FOUNDED
-          
+      
         #Se sono già in un intersezione non invio altre letture di "CROSS"
         if self.isOverIntersection:
             self.isOverIntersection = self.isRedPath()
-            return
+            return  
+          
+        obstaclesCheck = self.obstaclesAvoidance.checkObstacles()
+        if obstaclesCheck == OBS_FOUNDED:
+            return OBS_FOUNDED
         
         if self.isRedPath():
             self.isOverIntersection = True

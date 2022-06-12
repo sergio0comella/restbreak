@@ -121,8 +121,11 @@ class PathManager:
     def popIntersection(self):
         return self.intersections.pop(0) if self.intersections else UNKNOWN
 
-    def getRobotAngle(self):
+    def getRobotAngleWithCheck(self):
         return self.utilController.checkDegrees(self.getRobotAngle())
+
+    def getRobotAngleWithoutCheck(self):
+        return self.getRobotAngle()
 
     def getRobotAngleApproximate(self):
         currAngle = self.getRobotAngle()

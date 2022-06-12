@@ -5,13 +5,13 @@ from Logger import Logger
 class UtilController:
 
     def approximateAngle(self, degree):
-            if (355.0 < degree < 360.0 or 0.0 < degree < 5.0):
+            if (350.0 < degree < 360.0 or 0.0 < degree < 10.0):
                 return NORTH
-            elif (265.0 < degree < 275.0):
+            elif (260.0 < degree < 280.0):
                 return EAST
-            elif (85.0 < degree < 95.0):
+            elif (80.0 < degree < 100.0):
                 return WEST
-            elif (175.5 < degree < 185.0):
+            elif (170.5 < degree < 190.0):
                 return SOUTH
             else:
                 return int(degree)

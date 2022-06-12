@@ -1,4 +1,3 @@
-from tkinter import E
 
 from Position import Position
 from controller import Robot
@@ -128,7 +127,7 @@ class BotDistributore:
         newAngle = self.pathManager.popDirection()
 
         if np.isnan(newAngle):
-            newAngle = self.pathManager.getRobotAngle()
+            newAngle = self.pathManager.getRobotAngleWithCheck()
 
         self.rotateRobot(newAngle, uTurn=self.isStarted)
         self.pathManager.updatePosition()
@@ -138,7 +137,7 @@ class BotDistributore:
         Logger.info('Ostatacolo presente dopo l\'attesa. Avvio procedura di Collision Avoidance')
         if self.isCollisionAvoidance:
             return
-        # self.stopMoving()
+        self.stopMoving()
         self.isCollisionAvoidance = True
         self.pathManager.setStartPosition(self.pathManager.currentPosition)
         self.pathManager.updateObstaclesInMap()
@@ -151,7 +150,7 @@ class BotDistributore:
     # newAngle è l'angolo che deve avere il robot rispetto al Nord
     #  Non è l'angolo di rotazione
     def rotateRobot(self, newAngle, uTurn=False):
-        currentAngle = self.pathManager.getRobotAngle()
+        currentAngle = self.pathManager.getRobotAngleWithoutCheck()
         self.pathManager.updateClockwise(newAngle, currentAngle)
         differenceAngle = self.calculateDifferenceAngle(currentAngle, newAngle)
         timeToRotate = self.robot.getTime() + self.pathManager.calculateRotationTime(differenceAngle)
