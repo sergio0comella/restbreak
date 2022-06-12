@@ -124,9 +124,6 @@ class PathManager:
     def getRobotAngle(self):
         return self.utilController.checkDegrees(self.getRobotAngle())
 
-    def getRobotAngleWithoutCheck(self):
-        return self.getRobotAngle()
-
     def getRobotAngleApproximate(self):
         currAngle = self.getRobotAngle()
         return self.utilController.checkAndApproximateAngle(currAngle)
@@ -168,6 +165,7 @@ class PathManager:
             elif(270.1 <= currAngle <= 359.9 or 0 <= currAngle <= 89.9):
                 self.clockwise = False
 
+    # t = Θ/ω
     def calculateRotationTime(self, degrees):
         return abs(degrees) / ROTSPEED
 

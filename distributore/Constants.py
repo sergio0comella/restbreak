@@ -10,8 +10,11 @@ GOAL = 4
 WAITING = 305
 UNKNOWN = nan
 
+TIME_BEFORE_CA = 5
+
+WHEEL_RADIUS = 10.2
 MAX_SPEED = 6.28
-ROTSPEED = 40
+ROTSPEED = 40  # <== ω -> ω = v/r (0.61 rad/s) --> (40 grd/s)
 ADJSPEED = 0.15
 SPEED = MAX_SPEED * ADJSPEED
 

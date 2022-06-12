@@ -67,7 +67,7 @@ class BotDistributore:
                 if pathStatus == OBS_FOUNDED and self.waitingBeforeCA:
                     self.waitingBeforeCA = False
                     self.stopMoving()
-                    self.stepRotation(self.robot.getTime() + 5)
+                    self.stepRotation(self.robot.getTime() + TIME_BEFORE_CA)
                     self.setWheelsSpeed(SPEED, SPEED)
                     continue
                 else:
@@ -138,7 +138,7 @@ class BotDistributore:
         Logger.info('Ostatacolo presente dopo l\'attesa. Avvio procedura di Collision Avoidance')
         if self.isCollisionAvoidance:
             return
-        self.stopMoving()
+        # self.stopMoving()
         self.isCollisionAvoidance = True
         self.pathManager.setStartPosition(self.pathManager.currentPosition)
         self.pathManager.updateObstaclesInMap()
@@ -151,7 +151,7 @@ class BotDistributore:
     # newAngle è l'angolo che deve avere il robot rispetto al Nord
     #  Non è l'angolo di rotazione
     def rotateRobot(self, newAngle, uTurn=False):
-        currentAngle = self.pathManager.getRobotAngleWithoutCheck()
+        currentAngle = self.pathManager.getRobotAngle()
         self.pathManager.updateClockwise(newAngle, currentAngle)
         differenceAngle = self.calculateDifferenceAngle(currentAngle, newAngle)
         timeToRotate = self.robot.getTime() + self.pathManager.calculateRotationTime(differenceAngle)
